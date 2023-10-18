@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Review" ALTER COLUMN "review" SET NOT NULL,
+ALTER COLUMN "review" SET DATA TYPE TEXT;

@@ -1,0 +1,128 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id String @id @default(uuid())
+  name String
+  email String
+  password String
+  role Role
+  gender Gender
+  contactNo String
+  address String
+  profileImg String?
+  dateOfBirth String
+  repairingCategories RepairingCategory[]
+  bookingServices BookingService[]
+  repairingPayments RepairingPayment[]
+  reportServices ReportService[]
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  @@map("users")
+}
+
+model Login {
+  id String @id @default(uuid())
+  email String
+  password String
+  @@map("login")
+}
+model Category {
+  id String @id @default(uuid())
+  title String
+
+
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  @@map("categories")
+}
+
+model RepairingCategory {
+  id String @id @default(uuid())
+  title String
+  rating Int @default(0)
+  image String
+  location String
+  details String
+  bookingCount Int @default(0)
+
+  status Boolean @default(true)
+  userId String
+
+  
+  user User @relation(fields: [userId],references: [id])
+
+
+  bookingServices BookingService[]
+  reviews Review[]
+  RepairingPayment RepairingPayment[]
+  reportServices ReportService[]
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  @@map("repairing_categories")
+
+}
+
+model Review {
+  id String @id @default(uuid())
+  repairingCategoryId String
+  review String
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  repairingCategory RepairingCategory @relation(fields: [repairingCategoryId],references: [id])
+@@map("reviews")
+}
+
+
+model BookingService {
+  id String @id @default(uuid())
+   details String 
+   location String
+   userId String
+  repairingCategoryId String
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  user User @relation(fields: [userId], references: [id])
+  repairingCategory RepairingCategory @relation(fields: [repairingCategoryId], references: [id])
+@@map("booking_services")
+}
+
+model RepairingPayment {
+  id String @id @default(uuid())
+  userId String
+  repairingCategoryId String
+  user User @relation(fields: [userId], references: [id])
+  repairingCategory RepairingCategory @relation(fields: [repairingCategoryId], references: [id])
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  @@map("repairing_payment")
+}
+model ReportService {
+  id String @id @default(uuid())
+  report String
+  userId String
+  repairingCategoryId String
+  user User @relation(fields: [userId], references: [id])
+  repairingCategory RepairingCategory @relation(fields: [repairingCategoryId], references: [id])
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  @@map("report_service")
+}
+enum Role {
+  admin
+  user
+  super_admin
+}
+enum Gender {
+  male
+  female
+  others
+}
